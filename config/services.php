@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -13,21 +12,17 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
-
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
-
     'resend' => [
         'key' => env('RESEND_API_KEY'),
     ],
-
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
-
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
@@ -35,4 +30,31 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Supply Chain Risk Platform - External APIs
+    |--------------------------------------------------------------------------
+    */
+
+    'exchangerate' => [
+        'key' => env('EXCHANGERATE_API_KEY'),
+        'base_url' => 'https://v6.exchangerate-api.com/v6',
+    ],
+
+    'gnews' => [
+        'key' => env('GNEWS_API_KEY'),
+        'base_url' => 'https://gnews.io/api/v4',
+    ],
+
+    'openmeteo' => [
+        'base_url' => 'https://api.open-meteo.com/v1',
+    ],
+
+    'worldbank' => [
+        'base_url' => 'https://api.worldbank.org/v2',
+    ],
+
+    'restcountries' => [
+        'base_url' => 'https://countries.dev',
+    ],
 ];
