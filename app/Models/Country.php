@@ -74,4 +74,9 @@ class Country extends Model
     {
         return $this->hasMany(Article::class);
     }
+
+    public function favoritedBy(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+    return $this->hasMany(Favorite::class);
+    }
 }
