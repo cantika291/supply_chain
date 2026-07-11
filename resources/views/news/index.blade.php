@@ -7,12 +7,18 @@
 
     {{-- Header --}}
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
                 <h4 class="mb-1">News Intelligence</h4>
                 <p class="text-muted mb-0">Analisis sentimen berita ekonomi, logistik, dan geopolitik global</p>
             </div>
-            <span class="badge bg-primary fs-6">{{ $summary['total'] }} Berita</span>
+            <div class="d-flex align-items-center gap-2">
+                <small class="text-muted" id="lastUpdatedNews"></small>
+                <button class="btn btn-outline-info btn-sm text-dark" id="btnRefreshNews">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh Berita
+                </button>
+                <span class="badge bg-primary fs-6">{{ $summary['total'] }} Berita</span>
+            </div>
         </div>
     </div>
 
@@ -210,5 +216,37 @@
             }
         }
     });
+
+    const lnu = localStorage.getItem('last_news_update');
+if (lnu) {
+    const diff = Math.round((Date.now() - parseInt(lnu)) / 60000);
+    document.getElementById('lastUpdatedNews').textContent =
+        `Update: ${diff < 1 ? 'baru saja' : diff + ' mnt lalu'}`;
+}
+
+document.getElementById('btnRefreshNews')?.addEventListener('click', function() {
+    if (!confirm('Refresh berita dari GNews API? Ini menggunakan kuota harian.')) return;
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Fetching...';
+    fetch('/refresh/news', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        }
+    })
+    .then(r => r.json())
+    .then(d => {
+        localStorage.setItem('last_news_update', Date.now());
+        alert('✅ ' + d.message);
+        window.location.reload();
+    })
+    .catch(() => alert('Gagal refresh.'))
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i>Refresh Berita';
+    });
+});
 </script>
 @endpush

@@ -20,21 +20,31 @@
 
     {{-- Summary Cards --}}
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-geo-alt-fill text-primary" style="font-size: 2rem;"></i>
-                <h3 class="mt-2 mb-0">{{ number_format($totalPorts) }}</h3>
-                <p class="text-muted small mb-0">Total Pelabuhan</p>
+        <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #0d6efd !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Total Pelabuhan</p>
+                        <h2 class="mb-0 text-primary fw-bold">{{ number_format($totalPorts) }}</h2>
+                        <small class="text-muted">di seluruh dunia</small>
+                    </div>
+                    <i class="bi bi-geo-alt-fill text-primary" style="font-size: 2.5rem; opacity: 0.2;"></i>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-globe text-success" style="font-size: 2rem;"></i>
-                <h3 class="mt-2 mb-0">{{ $totalCountries }}</h3>
-                <p class="text-muted small mb-0">Negara</p>
+        <div class="card border-0 shadow-sm h-100" style="border-left: 4px solid #198754 !important;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Negara</p>
+                        <h2 class="mb-0 text-success fw-bold">{{ $totalCountries }}</h2>
+                        <small class="text-muted">memiliki pelabuhan</small>
+                    </div>
+                    <i class="bi bi-globe text-success" style="font-size: 2.5rem; opacity: 0.2;"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -45,7 +55,7 @@
                 <h6 class="mb-0">Top 5 Negara dengan Pelabuhan Terbanyak</h6>
             </div>
             <div class="card-body py-2">
-                @foreach ($countries as $country)
+                @foreach ($topCountries as $country)
                     <div class="d-flex justify-content-between align-items-center py-1">
                         <div class="d-flex align-items-center gap-2">
                             @if ($country->flag_url)

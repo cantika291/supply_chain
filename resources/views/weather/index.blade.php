@@ -15,18 +15,20 @@
 
     {{-- Current Country Weather Panel --}}
     <div class="col-12">
-        <div class="card border-0 shadow-sm" id="currentWeatherPanel">
-            <div class="card-body">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <i class="bi bi-geo-alt-fill text-primary"></i>
-                    <h6 class="mb-0">Cuaca Negara Saat Ini: <span id="currentCountryLabel" class="text-primary">Loading...</span></h6>
-                </div>
-                <div class="row g-3" id="currentWeatherData">
-                    <div class="col-12 text-center text-muted py-2">
-                        <div class="spinner-border spinner-border-sm me-2"></div> Mengambil data cuaca...
-                    </div>
-                </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h4 class="mb-1">Global Weather Monitoring</h4>
+                <p class="text-muted mb-0">Peta interaktif kondisi cuaca dan risiko badai per negara</p>
             </div>
+            <div class="d-flex align-items-center gap-2">
+                <small class="text-muted" id="lastUpdatedWeather"></small>
+                <button class="btn btn-outline-primary btn-sm" id="btnRefreshWeather">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh Cuaca
+                </button>
+                <span class="badge bg-primary fs-6">{{ $summary['total'] }} Negara</span>
+            </div>
+        </div>
+    </div>
         </div>
     </div>
 
@@ -205,5 +207,38 @@ function loadCurrentCountryWeather(cca3, name) {
             '<div class="col-12 text-muted small">Gagal mengambil data cuaca.</div>';
     });
 }
+
+// Last updated info
+const lwu = localStorage.getItem('last_weather_update');
+if (lwu) {
+    const diff = Math.round((Date.now() - parseInt(lwu)) / 60000);
+    document.getElementById('lastUpdatedWeather').textContent =
+        `Update: ${diff < 1 ? 'baru saja' : diff + ' mnt lalu'}`;
+}
+
+document.getElementById('btnRefreshWeather')?.addEventListener('click', function() {
+    if (!confirm('Refresh data cuaca semua negara? Ini akan memakan waktu ~30 detik.')) return;
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Updating...';
+    fetch('/refresh/weather', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        }
+    })
+    .then(r => r.json())
+    .then(d => {
+        localStorage.setItem('last_weather_update', Date.now());
+        alert('✅ ' + d.message);
+        window.location.reload();
+    })
+    .catch(() => alert('Gagal refresh.'))
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-arrow-clockwise me-1"></i>Refresh Cuaca';
+    });
+});
 </script>
 @endpush

@@ -85,43 +85,49 @@
         <small>Intelligence Platform</small>
     </div>
     <nav class="nav flex-column pb-4">
-        <div class="nav-section-title">Utama</div>
-        <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <i class="bi bi-grid-1x2-fill"></i> Overview
-        </a>
-        <a href="{{ route('countries.index') }}" class="nav-link {{ request()->routeIs('countries.*') ? 'active' : '' }}">
-            <i class="bi bi-globe-asia-australia"></i> Country Dashboard
-        </a>
-        <a href="{{ route('risk.index') }}" class="nav-link {{ request()->routeIs('risk.*') ? 'active' : '' }}">
-            <i class="bi bi-shield-exclamation"></i> Risk Scoring
-        </a>
-        <div class="nav-section-title">Data & Analitik</div>
-        <a href="{{ route('weather.index') }}" class="nav-link {{ request()->routeIs('weather.*') ? 'active' : '' }}">
-            <i class="bi bi-cloud-lightning-rain-fill"></i> Weather Monitoring
-        </a>
-        <a href="{{ route('currency.index') }}" class="nav-link {{ request()->routeIs('currency.*') ? 'active' : '' }}">
-            <i class="bi bi-currency-exchange"></i> Currency Dashboard
-        </a>
-        <a href="{{ route('news.index') }}" class="nav-link {{ request()->routeIs('news.*') ? 'active' : '' }}">
-            <i class="bi bi-newspaper"></i> News Intelligence
-        </a>
-        <a href="{{ route('ports.index') }}" class="nav-link {{ request()->routeIs('ports.*') ? 'active' : '' }}">
-            <i class="bi bi-geo-alt-fill"></i> Port Dashboard
-        </a>
-        <div class="nav-section-title">Alat Bantu</div>
-        <a href="{{ route('comparison.index') }}" class="nav-link {{ request()->routeIs('comparison.*') ? 'active' : '' }}">
-            <i class="bi bi-bar-chart-steps"></i> Country Comparison
-        </a>
-        <a href="{{ route('watchlist.index') }}" class="nav-link {{ request()->routeIs('watchlist.*') ? 'active' : '' }}">
-            <i class="bi bi-star-fill"></i> Favorite Monitoring
-        </a>
-        @if (auth()->user()->isAdmin())
-            <div class="nav-section-title">Administrasi</div>
-            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">
-                <i class="bi bi-gear-fill"></i> Admin Panel
+            <div class="nav-section-title">Utama</div>
+            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2-fill"></i> Overview
             </a>
-        @endif
-    </nav>
+            <a href="{{ route('countries.index') }}" class="nav-link {{ request()->routeIs('countries.*') ? 'active' : '' }}">
+                <i class="bi bi-globe-asia-australia"></i> Country Dashboard
+            </a>
+            <a href="{{ route('risk.index') }}" class="nav-link {{ request()->routeIs('risk.*') ? 'active' : '' }}">
+                <i class="bi bi-shield-exclamation"></i> Risk Scoring
+            </a>
+
+            <div class="nav-section-title">Data & Analitik</div>
+            <a href="{{ route('weather.index') }}" class="nav-link {{ request()->routeIs('weather.*') ? 'active' : '' }}">
+                <i class="bi bi-cloud-lightning-rain-fill"></i> Weather Monitoring
+            </a>
+            <a href="{{ route('currency.index') }}" class="nav-link {{ request()->routeIs('currency.*') ? 'active' : '' }}">
+                <i class="bi bi-currency-exchange"></i> Currency Dashboard
+            </a>
+            <a href="{{ route('news.index') }}" class="nav-link {{ request()->routeIs('news.*') ? 'active' : '' }}">
+                <i class="bi bi-newspaper"></i> News Intelligence
+            </a>
+            <a href="{{ route('ports.index') }}" class="nav-link {{ request()->routeIs('ports.*') ? 'active' : '' }}">
+                <i class="bi bi-geo-alt-fill"></i> Port Dashboard
+            </a>
+            <a href="{{ route('dataviz.index') }}" class="nav-link {{ request()->routeIs('dataviz.*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart-line-fill"></i> Data Visualization
+            </a>
+
+            <div class="nav-section-title">Alat Bantu</div>
+            <a href="{{ route('comparison.index') }}" class="nav-link {{ request()->routeIs('comparison.*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart-steps"></i> Country Comparison
+            </a>
+            <a href="{{ route('watchlist.index') }}" class="nav-link {{ request()->routeIs('watchlist.*') ? 'active' : '' }}">
+                <i class="bi bi-star-fill"></i> Favorite Monitoring
+            </a>
+
+            @if (auth()->user()->isAdmin())
+                <div class="nav-section-title">Administrasi</div>
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">
+                    <i class="bi bi-gear-fill"></i> Admin Panel
+                </a>
+            @endif
+        </nav>
 </aside>
 
 <div class="main-wrapper">

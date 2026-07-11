@@ -7,12 +7,18 @@
 
     {{-- Header --}}
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
                 <h4 class="mb-1">Currency Impact Dashboard</h4>
                 <p class="text-muted mb-0">Pantau nilai tukar mata uang global dan dampaknya terhadap rantai pasok</p>
             </div>
-            <span class="badge bg-primary fs-6">{{ $latestRates->count() }} Mata Uang</span>
+            <div class="d-flex align-items-center gap-2">
+                <small class="text-muted" id="lastUpdatedCurrency"></small>
+                <button class="btn btn-outline-success btn-sm" id="btnRefreshCurrency">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Refresh Kurs
+                </button>
+                <span class="badge bg-primary fs-6">{{ $latestRates->count() }} Mata Uang</span>
+            </div>
         </div>
     </div>
 
@@ -134,15 +140,21 @@ let trendChart = null;
 // Load grafik IDR saat halaman pertama buka
 document.addEventListener('DOMContentLoaded', () => {
     const gc = GlobalCountry.get();
-    const selectA = document.getElementById('countryA');
-    const existsA = Array.from(selectA.options).some(o => o.value === gc.cca3);
-    if (existsA) selectA.value = gc.cca3;
-    doCompare();
-});
+    const currencyCode = gc.currency || 'IDR';
+    const select = document.getElementById('currencySelect');
 
-// Event: dropdown ganti mata uang
-document.getElementById('currencySelect').addEventListener('change', function () {
-    loadCurrencyChart(this.value);
+    // Set dropdown ke mata uang negara aktif
+    if (select) {
+        const exists = Array.from(select.options).some(o => o.value === currencyCode);
+        if (exists) {
+            select.value = currencyCode;
+        }
+    }
+
+    // Delay sedikit supaya canvas sudah ter-render sepenuhnya
+    setTimeout(() => {
+        loadCurrencyChart(select?.value || 'IDR');
+    }, 300);
 });
 
 // Event: klik tombol grafik di tabel

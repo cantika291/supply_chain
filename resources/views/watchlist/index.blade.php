@@ -192,8 +192,7 @@ document.getElementById('btnAddWatchlist').addEventListener('click', function ()
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
-                || '{{ csrf_token() }}',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
         },
         body: JSON.stringify({ cca3 }),
     })
