@@ -110,6 +110,8 @@ class WeatherApiService
             return 'medium';
         }
 
+        // Simpan waktu sync terakhir ke cache Laravel
+        cache(['last_weather_sync' => now()->toDateTimeString()], now()->addDay());
         return 'low';
     }
 }

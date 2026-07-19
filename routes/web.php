@@ -51,6 +51,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/news', [NewsController::class, 'index'])->name('news.index');
     Route::get('/news/filter', [NewsController::class, 'filter'])->name('news.filter');
 
+    Route::post('/refresh/news', [NewsController::class, 'refreshNews'])
+    ->middleware(['auth']) // tambahkan middleware admin kalau ada, mis. 'admin'
+    ->name('news.refresh');
+
     // Ports
     Route::get('/ports', [PortController::class, 'index'])->name('ports.index');
     Route::get('/ports/search', [PortController::class, 'search'])->name('ports.search');
@@ -85,6 +89,8 @@ Route::middleware('auth')->group(function () {
         return response()->json($result);
     })->name('refresh.news');
 
+    Route::post('/currency/refresh', [CurrencyController::class, 'refresh'])->name('currency.refresh');
+
     // Admin routes
     Route::middleware('admin')->group(function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
@@ -97,5 +103,31 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/ports', [AdminController::class, 'ports'])->name('admin.ports');
         Route::post('/admin/ports', [AdminController::class, 'storePort'])->name('admin.ports.store');
         Route::delete('/admin/ports/{port}', [AdminController::class, 'destroyPort'])->name('admin.ports.destroy');
+        Route::get('/admin/run-command', function (\Illuminate\Http\Request $request) {
+    $allowed = ['sync:weather', 'sync:currency', 'sync:news', 'sync:countries', 'risk:calculate', 'sentiment:analyze'];
+    $cmd = $request->query('cmd');
+
+    if (!in_array($cmd, $allowed)) {
+        return response()->json(['success' => false, 'message' => 'Command tidak diizinkan.'], 403);
+    }
+
+    try {
+        $output = [];
+        \Illuminate\Support\Facades\Artisan::call($cmd);
+        $output = \Illuminate\Support\Facades\Artisan::output();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Command '{$cmd}' berhasil dijalankan.",
+            'output'  => $output,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error: ' . $e->getMessage(),
+        ], 500);
+    }
+})->name('admin.run-command');
+    
     });
 });

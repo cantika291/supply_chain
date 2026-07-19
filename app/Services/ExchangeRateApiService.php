@@ -8,26 +8,19 @@ use Illuminate\Support\Facades\Log;
 
 class ExchangeRateApiService
 {
-    /**
-     * Mengambil kurs SEMUA mata uang relatif terhadap USD dalam 1 request,
-     * lalu menyimpan setiap kurs ke tabel exchange_rates.
-     *
-     * @return array{success: bool, total: int, message: string}
-     */
     public function syncAllRates(): array
     {
         $baseUrl = config('services.exchangerate.base_url');
-        $apiKey = config('services.exchangerate.key');
+        $apiKey  = config('services.exchangerate.key');
 
         try {
             $response = Http::timeout(30)->get("{$baseUrl}/{$apiKey}/latest/USD");
 
             if (! $response->successful()) {
-                Log::error('ExchangeRate API gagal diakses', ['status' => $response->status()]);
-
+                Log::error('ExchangeRate API gagal', ['status' => $response->status()]);
                 return [
                     'success' => false,
-                    'total' => 0,
+                    'total'   => 0,
                     'message' => 'Gagal menghubungi ExchangeRate API (HTTP '.$response->status().').',
                 ];
             }
@@ -35,15 +28,16 @@ class ExchangeRateApiService
             $data = $response->json();
 
             if (($data['result'] ?? null) !== 'success') {
-                $errorType = $data['error-type'] ?? 'unknown error';
-
+                $errorType = $data['error-type'] ?? 'unknown';
                 return [
                     'success' => false,
-                    'total' => 0,
-                    'message' => "ExchangeRate API mengembalikan error: {$errorType}.",
+                    'total'   => 0,
+                    'message' => "ExchangeRate API error: {$errorType}.",
                 ];
             }
 
+            // Selalu gunakan tanggal hari ini (bukan tanggal dari API)
+            // supaya data selalu ter-update saat refresh
             $rateDate = now()->toDateString();
             $conversionRates = $data['conversion_rates'] ?? [];
             $savedCount = 0;
@@ -52,7 +46,7 @@ class ExchangeRateApiService
                 ExchangeRate::updateOrCreate(
                     [
                         'currency_code' => $currencyCode,
-                        'rate_date' => $rateDate,
+                        'rate_date'     => $rateDate,
                     ],
                     [
                         'rate_to_usd' => $rate,
@@ -61,17 +55,20 @@ class ExchangeRateApiService
                 $savedCount++;
             }
 
-            return [
-                'success' => true,
-                'total' => $savedCount,
-                'message' => "Berhasil sinkronisasi kurs {$savedCount} mata uang.",
-            ];
-        } catch (\Exception $e) {
-            Log::error('Exception saat sinkronisasi kurs', ['error' => $e->getMessage()]);
+            // Simpan waktu sync terakhir
+            cache(['last_currency_sync' => now()->format('d M Y H:i:s')], now()->addDay());
 
             return [
+                'success' => true,
+                'total'   => $savedCount,
+                'message' => "Berhasil sync kurs {$savedCount} mata uang (data: {$rateDate}).",
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Exception sync kurs', ['error' => $e->getMessage()]);
+            return [
                 'success' => false,
-                'total' => 0,
+                'total'   => 0,
                 'message' => 'Terjadi kesalahan: '.$e->getMessage(),
             ];
         }

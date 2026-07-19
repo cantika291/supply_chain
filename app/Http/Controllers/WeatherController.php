@@ -38,7 +38,8 @@ class WeatherController extends Controller
             'flag_url'    => $w->country->flag_url,
         ])->values();
 
-        return view('weather.index', compact('summary', 'mapData'));
+        return view('weather.index', compact('summary', 'mapData'))
+         ->with('lastSync', cache('last_weather_sync', 'Belum pernah sync'));
     }
 
     public function byCountry(Request $request): JsonResponse

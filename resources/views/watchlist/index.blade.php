@@ -145,12 +145,6 @@
                                     </div>
                                 @endif
                             </div>
-                            <div class="card-footer bg-white border-0 pt-0">
-                                <a href="{{ route('countries.index') }}?cca3={{ $country->cca3 }}"
-                                    class="btn btn-outline-primary btn-sm w-100">
-                                    <i class="bi bi-eye me-1"></i>Lihat Detail
-                                </a>
-                            </div>
                         </div>
                     </div>
                 @endforeach

@@ -86,6 +86,8 @@ class GNewsApiService
     private function storeArticle(array $article, string $category): void
     {
         if (empty($article['url']) || empty($article['title'])) {
+
+        cache(['last_news_sync' => now()->toDateTimeString()], now()->addDay());
             return;
         }
 

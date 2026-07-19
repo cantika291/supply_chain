@@ -51,7 +51,10 @@
             border-left-color: var(--brand-accent); font-weight: 600;
         }
         .sidebar .nav-link i { font-size: 1rem; width: 1.25rem; text-align: center; }
-        .main-wrapper { margin-left: var(--sidebar-width); min-height: 100vh; display: flex; flex-direction: column; }
+        .main-wrapper {
+            margin-left: var(--sidebar-width); min-height: 100vh;
+            display: flex; flex-direction: column;
+        }
         .topbar {
             background: #fff; border-bottom: 1px solid #e5e7eb;
             padding: 0.65rem 1.5rem; display: flex; align-items: center;
@@ -59,6 +62,8 @@
         }
         .content-area { padding: 1.75rem; flex: 1; }
         .btn-sidebar-toggle { display: none; }
+
+        /* Global Country Badge */
         .global-country-badge {
             background: linear-gradient(135deg, #0f2027, #203a43);
             color: #fff; border-radius: 20px; padding: 4px 12px;
@@ -67,8 +72,28 @@
         }
         .global-country-badge:hover { opacity: 0.85; }
         .global-country-badge .flag-img { height: 16px; border-radius: 2px; }
+
+        /* Live Badge */
+        .live-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(25, 135, 84, 0.1); color: #198754;
+            border: 1px solid rgba(25, 135, 84, 0.3); border-radius: 20px;
+            padding: 2px 10px; font-size: 0.72rem; font-weight: 600;
+        }
+        .live-dot {
+            width: 7px; height: 7px; background: #198754;
+            border-radius: 50%; flex-shrink: 0;
+            animation: livePulse 1.5s infinite;
+        }
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        /* Pagination fix */
         .pagination .page-link svg { width: 12px; height: 12px; }
         .pagination { font-size: 0.875rem; }
+
         @media (max-width: 991.98px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.show { transform: translateX(0); }
@@ -85,49 +110,49 @@
         <small>Intelligence Platform</small>
     </div>
     <nav class="nav flex-column pb-4">
-            <div class="nav-section-title">Utama</div>
-            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="bi bi-grid-1x2-fill"></i> Overview
-            </a>
-            <a href="{{ route('countries.index') }}" class="nav-link {{ request()->routeIs('countries.*') ? 'active' : '' }}">
-                <i class="bi bi-globe-asia-australia"></i> Country Dashboard
-            </a>
-            <a href="{{ route('risk.index') }}" class="nav-link {{ request()->routeIs('risk.*') ? 'active' : '' }}">
-                <i class="bi bi-shield-exclamation"></i> Risk Scoring
-            </a>
+        <div class="nav-section-title">Utama</div>
+        <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+            <i class="bi bi-grid-1x2-fill"></i> Overview
+        </a>
+        <a href="{{ route('countries.index') }}" class="nav-link {{ request()->routeIs('countries.*') ? 'active' : '' }}">
+            <i class="bi bi-globe-asia-australia"></i> Country Dashboard
+        </a>
+        <a href="{{ route('risk.index') }}" class="nav-link {{ request()->routeIs('risk.*') ? 'active' : '' }}">
+            <i class="bi bi-shield-exclamation"></i> Risk Scoring
+        </a>
 
-            <div class="nav-section-title">Data & Analitik</div>
-            <a href="{{ route('weather.index') }}" class="nav-link {{ request()->routeIs('weather.*') ? 'active' : '' }}">
-                <i class="bi bi-cloud-lightning-rain-fill"></i> Weather Monitoring
-            </a>
-            <a href="{{ route('currency.index') }}" class="nav-link {{ request()->routeIs('currency.*') ? 'active' : '' }}">
-                <i class="bi bi-currency-exchange"></i> Currency Dashboard
-            </a>
-            <a href="{{ route('news.index') }}" class="nav-link {{ request()->routeIs('news.*') ? 'active' : '' }}">
-                <i class="bi bi-newspaper"></i> News Intelligence
-            </a>
-            <a href="{{ route('ports.index') }}" class="nav-link {{ request()->routeIs('ports.*') ? 'active' : '' }}">
-                <i class="bi bi-geo-alt-fill"></i> Port Dashboard
-            </a>
-            <a href="{{ route('dataviz.index') }}" class="nav-link {{ request()->routeIs('dataviz.*') ? 'active' : '' }}">
-                <i class="bi bi-bar-chart-line-fill"></i> Data Visualization
-            </a>
+        <div class="nav-section-title">Data & Analitik</div>
+        <a href="{{ route('weather.index') }}" class="nav-link {{ request()->routeIs('weather.*') ? 'active' : '' }}">
+            <i class="bi bi-cloud-lightning-rain-fill"></i> Weather Monitoring
+        </a>
+        <a href="{{ route('currency.index') }}" class="nav-link {{ request()->routeIs('currency.*') ? 'active' : '' }}">
+            <i class="bi bi-currency-exchange"></i> Currency Dashboard
+        </a>
+        <a href="{{ route('news.index') }}" class="nav-link {{ request()->routeIs('news.*') ? 'active' : '' }}">
+            <i class="bi bi-newspaper"></i> News Intelligence
+        </a>
+        <a href="{{ route('ports.index') }}" class="nav-link {{ request()->routeIs('ports.*') ? 'active' : '' }}">
+            <i class="bi bi-geo-alt-fill"></i> Port Dashboard
+        </a>
+        <a href="{{ route('dataviz.index') }}" class="nav-link {{ request()->routeIs('dataviz.*') ? 'active' : '' }}">
+            <i class="bi bi-bar-chart-line-fill"></i> Data Visualization
+        </a>
 
-            <div class="nav-section-title">Alat Bantu</div>
-            <a href="{{ route('comparison.index') }}" class="nav-link {{ request()->routeIs('comparison.*') ? 'active' : '' }}">
-                <i class="bi bi-bar-chart-steps"></i> Country Comparison
-            </a>
-            <a href="{{ route('watchlist.index') }}" class="nav-link {{ request()->routeIs('watchlist.*') ? 'active' : '' }}">
-                <i class="bi bi-star-fill"></i> Favorite Monitoring
-            </a>
+        <div class="nav-section-title">Alat Bantu</div>
+        <a href="{{ route('comparison.index') }}" class="nav-link {{ request()->routeIs('comparison.*') ? 'active' : '' }}">
+            <i class="bi bi-bar-chart-steps"></i> Country Comparison
+        </a>
+        <a href="{{ route('watchlist.index') }}" class="nav-link {{ request()->routeIs('watchlist.*') ? 'active' : '' }}">
+            <i class="bi bi-star-fill"></i> Favorite Monitoring
+        </a>
 
-            @if (auth()->user()->isAdmin())
-                <div class="nav-section-title">Administrasi</div>
-                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">
-                    <i class="bi bi-gear-fill"></i> Admin Panel
-                </a>
-            @endif
-        </nav>
+        @if (auth()->user()->isAdmin())
+            <div class="nav-section-title">Administrasi</div>
+            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">
+                <i class="bi bi-gear-fill"></i> Admin Panel
+            </a>
+        @endif
+    </nav>
 </aside>
 
 <div class="main-wrapper">
@@ -139,14 +164,22 @@
             <h6 class="mb-0 text-muted">@yield('title', 'Dashboard')</h6>
         </div>
 
-        <div class="d-flex align-items-center gap-3">
-            {{-- Global Country Indicator --}}
+        <div class="d-flex align-items-center gap-2">
+
+            {{-- Live Badge --}}
+            <span class="live-badge" title="Data diperbarui otomatis oleh scheduler">
+                <span class="live-dot"></span>
+                LIVE
+            </span>
+
+            {{-- Global Country Badge --}}
             <button class="global-country-badge" id="globalCountryBadge"
-                onclick="window.location='/countries'" title="Klik untuk ganti negara">
+                onclick="window.location='/countries'"
+                title="Klik untuk ganti negara aktif">
                 <i class="bi bi-globe2"></i>
                 <img class="flag-img d-none" id="globalFlagImg" src="" alt="">
                 <span id="globalCountryName">Pilih Negara</span>
-                <i class="bi bi-pencil-fill" style="font-size: 0.65rem; opacity: 0.7;"></i>
+                <i class="bi bi-pencil-fill" style="font-size:0.65rem;opacity:0.7;"></i>
             </button>
 
             <span class="text-muted small">
@@ -176,38 +209,40 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // ============================================================
-    // GLOBAL COUNTRY CONTEXT — dibaca semua halaman
+    // GLOBAL COUNTRY CONTEXT
     // ============================================================
     window.GlobalCountry = {
         get: function() {
             return {
-                cca3: localStorage.getItem('gc_cca3') || 'IDN',
-                name: localStorage.getItem('gc_name') || 'Indonesia',
-                flag: localStorage.getItem('gc_flag') || '',
+                cca3:     localStorage.getItem('gc_cca3')     || 'IDN',
+                name:     localStorage.getItem('gc_name')     || 'Indonesia',
+                flag:     localStorage.getItem('gc_flag')     || '',
                 currency: localStorage.getItem('gc_currency') || 'IDR',
             };
         },
         set: function(cca3, name, flag, currency) {
-            localStorage.setItem('gc_cca3', cca3);
-            localStorage.setItem('gc_name', name);
-            localStorage.setItem('gc_flag', flag || '');
+            localStorage.setItem('gc_cca3',     cca3);
+            localStorage.setItem('gc_name',     name);
+            localStorage.setItem('gc_flag',     flag     || '');
             localStorage.setItem('gc_currency', currency || '');
             this.updateBadge();
         },
         updateBadge: function() {
-            const data = this.get();
-            document.getElementById('globalCountryName').textContent = data.name;
-            const flagImg = document.getElementById('globalFlagImg');
-            if (data.flag) {
-                flagImg.src = data.flag;
-                flagImg.classList.remove('d-none');
-            } else {
-                flagImg.classList.add('d-none');
+            const data    = this.get();
+            const nameEl  = document.getElementById('globalCountryName');
+            const flagEl  = document.getElementById('globalFlagImg');
+            if (nameEl) nameEl.textContent = data.name;
+            if (flagEl) {
+                if (data.flag) {
+                    flagEl.src = data.flag;
+                    flagEl.classList.remove('d-none');
+                } else {
+                    flagEl.classList.add('d-none');
+                }
             }
         }
     };
 
-    // Update badge saat halaman load
     document.addEventListener('DOMContentLoaded', () => {
         GlobalCountry.updateBadge();
     });

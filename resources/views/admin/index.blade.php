@@ -42,30 +42,6 @@
         </div>
     </div>
 
-    {{-- Quick Actions --}}
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-0 pt-3">
-                <h6 class="mb-0"><i class="bi bi-lightning-fill text-warning me-2"></i>Quick Actions</h6>
-            </div>
-            <div class="card-body d-flex gap-2 flex-wrap">
-                <form method="POST" action="/artisan/sync" class="d-inline">
-                    @csrf
-                    <button type="button" class="btn btn-primary btn-sm"
-                        onclick="runCommand('sync:countries')">
-                        <i class="bi bi-arrow-repeat me-1"></i>Sync Semua Data API
-                    </button>
-                </form>
-                <button class="btn btn-success btn-sm" onclick="runCommand('risk:calculate')">
-                    <i class="bi bi-calculator me-1"></i>Hitung Ulang Risk Score
-                </button>
-                <button class="btn btn-info btn-sm text-white" onclick="runCommand('sentiment:analyze')">
-                    <i class="bi bi-emoji-smile me-1"></i>Analisis Sentimen Berita
-                </button>
-            </div>
-        </div>
-    </div>
-
     {{-- Recent Users --}}
     <div class="col-md-6">
         <div class="card border-0 shadow-sm">
@@ -109,7 +85,9 @@
                     <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
                         <div>
                             <p class="mb-0 small fw-semibold">{{ Str::limit($article->title, 50) }}</p>
-                            <small class="text-muted">{{ $article->author?->name }} · {{ $article->created_at->diffForHumans() }}</small>
+                            <small class="text-muted">
+                                {{ $article->author?->name }} · {{ $article->created_at->diffForHumans() }}
+                            </small>
                         </div>
                     </div>
                 @empty
@@ -121,30 +99,3 @@
 
 </div>
 @endsection
-
-@push('scripts')
-<script>
-function runCommand(cmd) {
-    const btn = event.target;
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Running...';
-
-    fetch(`/admin/run-command?cmd=${cmd}`, {
-        headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message || 'Selesai!');
-        btn.disabled = false;
-        btn.innerHTML = btn.dataset.originalText || 'Done';
-    })
-    .catch(() => {
-        alert('Command selesai dijalankan.');
-        btn.disabled = false;
-    });
-}
-</script>
-@endpush

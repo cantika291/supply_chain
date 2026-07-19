@@ -143,17 +143,6 @@
         </div>
     </div>
 
-    {{-- Chart GDP Trend --}}
-    <div class="col-12 d-none" id="chartSection">
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-0 pt-3">
-                <h6 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Tren Ekonomi</h6>
-            </div>
-            <div class="card-body">
-                <canvas id="gdpChart" style="max-height: 280px;"></canvas>
-            </div>
-        </div>
-    </div>
 
 </div>
 @endsection

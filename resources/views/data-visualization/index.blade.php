@@ -105,15 +105,7 @@
         </div>
     </div>
 
-    {{-- Info box --}}
-    <div class="col-12 d-none viz-chart">
-        <div class="alert alert-info border-0 shadow-sm mb-0">
-            <i class="bi bi-info-circle me-2"></i>
-            <strong>Catatan:</strong> Currency Trend dan Risk Trend akan memiliki lebih banyak titik data
-            seiring berjalannya waktu. Jalankan <code>php artisan sync:countries</code> dan
-            <code>php artisan risk:calculate</code> setiap hari untuk membangun histori data yang lebih lengkap.
-        </div>
-    </div>
+    
 
 </div>
 @endsection
