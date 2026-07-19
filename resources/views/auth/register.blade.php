@@ -11,7 +11,8 @@
             <label for="name" class="form-label">Nama Lengkap</label>
             <input type="text"
                 class="form-control @error('name') is-invalid @enderror"
-                id="name" name="name" value="{{ old('name') }}"
+                id="name" name="name"
+                value="{{ old('name') }}"
                 required autofocus>
             @error('name')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -22,7 +23,8 @@
             <label for="email" class="form-label">Email</label>
             <input type="email"
                 class="form-control @error('email') is-invalid @enderror"
-                id="email" name="email" value="{{ old('email') }}"
+                id="email" name="email"
+                value="{{ old('email') }}"
                 required>
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -33,7 +35,7 @@
             <label for="role" class="form-label">Daftar Sebagai</label>
             <select class="form-select @error('role') is-invalid @enderror"
                 id="role" name="role" required>
-                <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>
+                <option value="user"  {{ old('role', 'user') === 'user'  ? 'selected' : '' }}>
                     👤 User — Akses semua dashboard monitoring
                 </option>
                 <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>
@@ -58,8 +60,10 @@
 
         <div class="mb-4">
             <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-            <input type="password" class="form-control"
-                id="password_confirmation" name="password_confirmation" required>
+            <input type="password"
+                class="form-control"
+                id="password_confirmation"
+                name="password_confirmation" required>
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Daftar</button>
