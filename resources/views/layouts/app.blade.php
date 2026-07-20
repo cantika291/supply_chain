@@ -250,6 +250,36 @@
     document.getElementById('sidebarToggle')?.addEventListener('click', function() {
         document.getElementById('sidebar').classList.toggle('show');
     });
+
+    // ============================================================
+    // SIDEBAR SCROLL POSITION PERSISTENCE
+    // Supaya posisi scroll sidebar tidak reset ke atas tiap kali
+    // pindah halaman (karena tiap klik menu = full page reload)
+    // ============================================================
+    (function () {
+        const SIDEBAR_SCROLL_KEY = 'sidebarScrollTop';
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar) return;
+
+        // 1. Restore posisi scroll begitu halaman baru selesai dirender
+        const savedScroll = sessionStorage.getItem(SIDEBAR_SCROLL_KEY);
+        if (savedScroll !== null) {
+            sidebar.scrollTop = parseInt(savedScroll, 10);
+        }
+
+        // 2. Simpan posisi tiap kali user scroll manual
+        sidebar.addEventListener('scroll', function () {
+            sessionStorage.setItem(SIDEBAR_SCROLL_KEY, sidebar.scrollTop);
+        });
+
+        // 3. Simpan juga tepat sebelum link di sidebar diklik
+        //    (jaga-jaga kalau halaman langsung pindah sebelum event scroll sempat jalan)
+        sidebar.querySelectorAll('a.nav-link').forEach(function (link) {
+            link.addEventListener('click', function () {
+                sessionStorage.setItem(SIDEBAR_SCROLL_KEY, sidebar.scrollTop);
+            });
+        });
+    })();
 </script>
 @stack('scripts')
 </body>

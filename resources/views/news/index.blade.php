@@ -161,7 +161,7 @@
 
             @if ($news->hasPages())
                 <div class="card-footer bg-white border-0">
-                    {{ $news->links() }}
+                    {{ $news->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </div>
