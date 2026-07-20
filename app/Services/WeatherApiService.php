@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Log;
 class WeatherApiService
 {
     /**
-     * Sinkronisasi cuaca untuk SEMUA negara yang punya koordinat valid.
-     * 1 request per negara (Open-Meteo tidak punya endpoint batch),
-     * dengan jeda kecil antar request agar sopan terhadap server gratis.
+     * Sync cuaca menggunakan Http::pool() — kirim banyak request
+     * secara paralel, bukan satu per satu. Jauh lebih cepat.
      *
-     * @return array{success: bool, total: int, message: string}
+     * Open-Meteo tidak membatasi concurrent request untuk free tier,
+     * jadi kita bisa kirim 25 request sekaligus (batch).
      */
     public function syncAllWeather(): array
     {
@@ -24,80 +24,107 @@ class WeatherApiService
             ->whereNotNull('longitude')
             ->get();
 
+        if ($countries->isEmpty()) {
+            return [
+                'success' => true,
+                'total'   => 0,
+                'message' => 'Tidak ada negara dengan koordinat valid.',
+            ];
+        }
+
         $syncedCount = 0;
         $failedCount = 0;
 
-        foreach ($countries as $country) {
+        // Bagi negara ke dalam batch 25 per kelompok
+        // supaya tidak membanjiri server API sekaligus
+        $batches = $countries->chunk(25);
+
+        foreach ($batches as $batch) {
             try {
-                $response = Http::timeout(15)->get("{$baseUrl}/forecast", [
-                    'latitude' => $country->latitude,
-                    'longitude' => $country->longitude,
-                    'current' => 'temperature_2m,precipitation,wind_speed_10m,weather_code',
-                ]);
+                // Http::pool() mengirim semua request dalam batch SECARA PARALEL
+                $responses = Http::pool(function ($pool) use ($batch, $baseUrl) {
+                    foreach ($batch as $country) {
+                        $pool->as($country->cca3)
+                            ->timeout(10)
+                            ->get("{$baseUrl}/forecast", [
+                                'latitude'  => $country->latitude,
+                                'longitude' => $country->longitude,
+                                'current'   => 'temperature_2m,precipitation,wind_speed_10m,weather_code',
+                            ]);
+                    }
+                });
 
-                if (! $response->successful()) {
-                    $failedCount++;
+                // Proses setiap response dari batch
+                foreach ($batch as $country) {
+                    $response = $responses[$country->cca3] ?? null;
 
-                    continue;
+                   if (! $response instanceof \Illuminate\Http\Client\Response) {
+                     $failedCount++;
+                     continue;
+                     }
+
+                   if (! $response->successful()) {
+                     $failedCount++;
+                     continue;
+                     }
+
+                    $current = $response->json('current');
+
+                    if (! $current) {
+                        $failedCount++;
+                        continue;
+                    }
+
+                    $this->storeWeather($country, $current);
+                    $syncedCount++;
                 }
 
-                $current = $response->json('current');
-
-                if (! $current) {
-                    $failedCount++;
-
-                    continue;
-                }
-
-                $this->storeWeather($country, $current);
-                $syncedCount++;
             } catch (\Exception $e) {
-                Log::warning("Gagal ambil cuaca untuk {$country->name}", ['error' => $e->getMessage()]);
-                $failedCount++;
+                Log::warning('Batch cuaca gagal', ['error' => $e->getMessage()]);
+                $failedCount += $batch->count();
             }
 
-            // Jeda kecil antar request - sopan terhadap server gratis,
-            // menghindari terkesan membanjiri (flooding) API.
-            usleep(100000); // 0.1 detik
+            // Jeda sangat kecil antar batch (bukan antar negara)
+            // 25 negara selesai → jeda 0.5 detik → batch berikutnya
+            usleep(500000); // 0.5 detik per batch
         }
+
+        // Simpan waktu sync terakhir
+        cache(
+            ['last_weather_sync' => now()->format('d M Y H:i:s')],
+            now()->addDay()
+        );
 
         return [
             'success' => true,
-            'total' => $syncedCount,
-            'message' => "Berhasil sinkronisasi cuaca {$syncedCount} negara ({$failedCount} gagal/dilewati).",
+            'total'   => $syncedCount,
+            'message' => "Berhasil sync cuaca {$syncedCount} negara ({$failedCount} gagal).",
         ];
     }
 
-    /**
-     * Menyimpan data cuaca 1 negara + menghitung klasifikasi storm risk
-     * berdasarkan algoritma sederhana (kode WMO + kecepatan angin + curah hujan).
-     */
     private function storeWeather(Country $country, array $current): void
     {
-        $temperature = $current['temperature_2m'] ?? null;
-        $rainfall = $current['precipitation'] ?? 0;
-        $windSpeed = $current['wind_speed_10m'] ?? 0;
-        $weatherCode = $current['weather_code'] ?? 0;
+        $temperature = $current['temperature_2m']   ?? null;
+        $rainfall    = $current['precipitation']    ?? 0;
+        $windSpeed   = $current['wind_speed_10m']   ?? 0;
+        $weatherCode = $current['weather_code']     ?? 0;
 
-        $stormRisk = $this->classifyStormRisk($weatherCode, $windSpeed, $rainfall);
+        $stormRisk = $this->classifyStormRisk(
+            (int) $weatherCode,
+            (float) $windSpeed,
+            (float) $rainfall
+        );
 
         WeatherCache::create([
             'country_id' => $country->id,
             'temperature' => $temperature,
-            'rainfall' => $rainfall,
-            'wind_speed' => $windSpeed,
-            'storm_risk' => $stormRisk,
-            'fetched_at' => now(),
+            'rainfall'    => $rainfall,
+            'wind_speed'  => $windSpeed,
+            'storm_risk'  => $stormRisk,
+            'fetched_at'  => now(),
         ]);
     }
 
-    /**
-     * Algoritma klasifikasi storm risk buatan sendiri, berdasarkan
-     * kombinasi 3 indikator: kode cuaca WMO, kecepatan angin, curah hujan.
-     *
-     * Kode WMO 95-99 = thunderstorm (badai petir) - kategori tertinggi.
-     * Referensi: https://open-meteo.com/en/docs (WMO Weather interpretation codes)
-     */
     private function classifyStormRisk(int $weatherCode, float $windSpeed, float $rainfall): string
     {
         $isThunderstorm = $weatherCode >= 95 && $weatherCode <= 99;
@@ -110,8 +137,6 @@ class WeatherApiService
             return 'medium';
         }
 
-        // Simpan waktu sync terakhir ke cache Laravel
-        cache(['last_weather_sync' => now()->toDateTimeString()], now()->addDay());
         return 'low';
     }
 }
