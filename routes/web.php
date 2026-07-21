@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
     // Risk Scoring
     Route::get('/risk-scoring', [RiskScoreController::class, 'index'])->name('risk.index');
     Route::get('/risk-scoring/detail', [RiskScoreController::class, 'show'])->name('risk.show');
-
+    
     // Weather
     Route::get('/weather', [WeatherController::class, 'index'])->name('weather.index');
     Route::get('/weather/country', [WeatherController::class, 'byCountry'])->name('weather.country');
@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     // News
     Route::get('/news', [NewsController::class, 'index'])->name('news.index');
     Route::get('/news/filter', [NewsController::class, 'filter'])->name('news.filter');
+    Route::post('/news/refresh', [NewsController::class, 'refresh'])->name('news.refresh');
 
     Route::post('/refresh/news', [NewsController::class, 'refreshNews'])
     ->middleware(['auth']) // tambahkan middleware admin kalau ada, mis. 'admin'
