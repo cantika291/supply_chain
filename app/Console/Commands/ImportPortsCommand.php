@@ -14,7 +14,7 @@ class ImportPortsCommand extends Command
 
     public function handle(): int
     {
-        $filePath = storage_path('app/world-port-index.csv');
+        $filePath = database_path('data/world-port-index.csv');
 
         if (!file_exists($filePath)) {
             $this->error("File tidak ditemukan: {$filePath}");
